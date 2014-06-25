@@ -1,0 +1,55 @@
+* Intro
+My first DockerFile, so be afraid.
+
+Contain running openmcl, aka ccl, a Common Lisp implementation.
+
+It exports a swank listener on port 4005.  You might run it as so:
+
+  docker run --name=ccl-foo -p 14005:4005  -d -i bhyde/openmcl-container
+
+You can see how the start up proceeded by doing:
+  docker logs ccl-foo
+
+You have three choices for how to interact with it 
+a. emacs: M-x slime-connect
+b. common lisp: see swank-client (in quicklisp)
+c. it's main REPL: docker attach ccl-foo
+
+* Issues
+
+Note that I have had a lot of trouble exporting the swank listener
+from machine to machine successfully.
+
+On DigitalOcean using their docker application, for example, I
+encountered an issue that appears related to [[https://github.com/dotcloud/docker/issues/2174][this discussion]].
+
+In the end I used ssh forwarding like so:
+#begin_src
+  LocalForward 14005 172.17.42.1:14005
+#end_src
+where 172.17.42.1 is IP assigned the docker0 device on 
+container's host.
+
+* Tricks
+
+You can eval a form in the container using attach.
+
+#+begin_src shell
+bash-3.2$ echo '(length (list-all-packages))' | dfc attach ccl
+86
+? bash-3.2$ 
+#+end_src
+
+
+But emacs slime/swank, if connected, will field any errors that triggers and put
+you into the debugger. A form like:
+#+begin_src lisp
+  (handler-case (list-all-bogus) (error (e))) 
+#+end_src
+
+FYI: Some points are worth making about the digital ocean application
+for running containers.  You really must apt-get update after you
+create your droplet because the default docker version is old and
+buggy.  I also modified /etc/init/docker.conf so the docker daemon
+would listen on TCP, thus letting me forward that back to my
+workstation, e.g. DOCKER_OPTS="-H unix:// -H tcp://0.0.0.0:2375"
