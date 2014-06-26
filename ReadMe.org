@@ -1,7 +1,7 @@
 * Intro
 My first DockerFile, so be afraid.
 
-Contain running openmcl, aka ccl, a Common Lisp implementation.
+A container that runs openmcl, aka ccl, a Common Lisp implementation.
 
 It exports a swank listener on port 4005.  You run it like so:
 
@@ -32,7 +32,7 @@ container's host.
 
 * Tricks
 
-You can eval a form in the container using attach.
+You can eval a form inside the container using attach.
 
 #+begin_src shell
 bash-3.2$ echo '(length (list-all-packages))' | dfc attach ccl
@@ -51,5 +51,5 @@ FYI: Some points are worth making about the digital ocean application
 for running containers.  You really must apt-get update after you
 create your droplet because the default docker version is old and
 buggy.  I also modified /etc/init/docker.conf so the docker daemon
-would listen on TCP, thus letting me forward that back to my
-workstation, e.g. DOCKER_OPTS="-H unix:// -H tcp://0.0.0.0:2375"
+listens on TCP, e.g. DOCKER_OPTS="-H unix:// -H tcp://0.0.0.0:2375".
+That enables forward the docker back to a workstation.
