@@ -3,9 +3,9 @@ My first DockerFile, so be afraid.
 
 Contain running openmcl, aka ccl, a Common Lisp implementation.
 
-It exports a swank listener on port 4005.  You might run it as so:
+It exports a swank listener on port 4005.  You run it like so:
 
-  docker run --name=ccl-foo -p 14005:4005  -d -i bhyde/openmcl-container
+  docker run --name=ccl-foo -p 14005:4005  -d -i bhyde/crate-of-ccl
 
 You can see how the start up proceeded by doing:
   docker logs ccl-foo
